@@ -22,6 +22,24 @@ class ViewController: UIViewController {
         }
     }
     
+    var displayValue : Double? {
+        get {
+            if let value = Double(display.text!) {
+                return value
+            } else {
+                return nil
+            }
+        }
+        set {
+            if let value = newValue {
+                display.text = "\(value)"
+                currentlyTypingNumber = false
+            } else {
+                display.text = "ERROR"
+            }
+        }
+    }
+    
     @IBAction func appendDigit(sender: UIButton) {
         if currentlyTypingNumber {
             display.text = display.text! + sender.currentTitle!
@@ -37,37 +55,10 @@ class ViewController: UIViewController {
         }
     }
     
-//    @IBAction func appendSpecial(sender: UIButton) {
-//        if currentlyTypingNumber { enter() }
-//        switch sender.currentTitle! {
-//            case "π": displayValue = M_PI
-//            default: break
-//        }
-//        enter()
-//    }
-    
     @IBAction func clear() {
         brain.clear()
         display.text = "0"
         history.text = brain.getStackString()
-    }
-    
-    var displayValue : Double? {
-        get {
-            if let value = Double(display.text!) {
-                return value
-            } else {
-                return nil
-            }
-        }
-        set {
-            if newValue == nil {
-                display.text = "ERROR"
-            } else {
-                display.text = "\(newValue!)"
-                currentlyTypingNumber = false
-            }
-        }
     }
     
     @IBAction func enter() {
