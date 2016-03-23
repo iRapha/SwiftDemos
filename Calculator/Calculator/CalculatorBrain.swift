@@ -112,7 +112,7 @@ class CalculatorBrain {
         get {
             let desc = describe(stack: stack).currentString
             if desc == "?" { return "" }
-            return desc
+            return "\(desc)="
         }
     }
     
