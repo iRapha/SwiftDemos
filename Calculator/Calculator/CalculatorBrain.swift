@@ -132,18 +132,22 @@ class CalculatorBrain {
                 
             case .UnaryOperation(_, _):
                 let eval1 = describe(stack: remainingStack)
-                return ("(\(op.description)(\(eval1.currentString)))", eval1.remainingStack)
+                return ("\(op.description)(\(eval1.currentString))", eval1.remainingStack)
                 
             case .BinaryOperation(_, _):
                 let eval1 = describe(stack: remainingStack)
                 let eval2 = describe(stack: eval1.remainingStack)
-                    return ("(\(eval2.currentString)\(op.description)\(eval1.currentString))", eval2.remainingStack)
+                
+                let currentString1 = (Double(eval1.currentString) != nil ? eval1.currentString : "(\(eval1.currentString))")
+                let currentString2 = (Double(eval2.currentString) != nil ? eval2.currentString : "(\(eval2.currentString))")
+                
+                return ("\(currentString2)\(op.description)\(currentString1)", eval2.remainingStack)
             
             case .NamedValue(let symbol, _):
-                return ("\(symbol)", remainingStack)
+                return (symbol, remainingStack)
                 
             case .Variable(let symbol):
-                return ("\(symbol)", remainingStack)
+                return (symbol, remainingStack)
             }
         }
         return ("?", stack)
