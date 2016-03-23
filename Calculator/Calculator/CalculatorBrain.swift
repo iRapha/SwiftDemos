@@ -18,10 +18,10 @@ class CalculatorBrain {
         func learnOp(op: Op) {
             knownOps[op.description] = op
         }
-        learnOp(Op.BinaryOperation("✕", *, false))
-        learnOp(Op.BinaryOperation("+", +, false))
-        learnOp(Op.BinaryOperation("÷", { $1 / $0 }, true))
-        learnOp(Op.BinaryOperation("−", { $1 - $0 }, true))
+        learnOp(Op.BinaryOperation("✕", *))
+        learnOp(Op.BinaryOperation("+", +))
+        learnOp(Op.BinaryOperation("÷", { $1 / $0 }))
+        learnOp(Op.BinaryOperation("−", { $1 - $0 }))
         learnOp(Op.UnaryOperation("√", sqrt))
         learnOp(Op.UnaryOperation("sin", sin))
         learnOp(Op.UnaryOperation("cos", cos))
@@ -30,7 +30,7 @@ class CalculatorBrain {
     
     private enum Op: CustomStringConvertible {
         case UnaryOperation(String, Double -> Double)
-        case BinaryOperation(String, (Double, Double) -> Double, Bool)
+        case BinaryOperation(String, (Double, Double) -> Double)
         case NamedValue(String, Double)
         case Operand(Double)
         case Variable(String)
@@ -42,7 +42,7 @@ class CalculatorBrain {
                     return "\(operand)"
                 case .UnaryOperation(let symbol, _):
                     return symbol
-                case .BinaryOperation(let symbol, _, _):
+                case .BinaryOperation(let symbol, _):
                     return symbol
                 case .NamedValue(let symbol, _):
                     return symbol
@@ -70,7 +70,7 @@ class CalculatorBrain {
                 if let operand = eval1.result {
                     return (operation(operand), eval1.remainingStack)
                 }
-            case .BinaryOperation(_, let operation, _):
+            case .BinaryOperation(_, let operation):
                 let eval1 = eval(remainingStack)
                 if let operand1 = eval1.result {
                     let eval2 = eval(eval1.remainingStack)
@@ -110,38 +110,36 @@ class CalculatorBrain {
     
     var description: String {
         get {
-            return describeStack("", stack: stack).currentString
+            let desc = describe(stack: stack).currentString
+            if desc == "?" { return "" }
+            return desc
         }
     }
     
-    private func describeStack(currentString: String, stack: [Op]) -> (currentString: String, remainingStack: [Op]) {
+    private func describe(stack stack: [Op]) -> (currentString: String, remainingStack: [Op]) {
         if !stack.isEmpty {
             var remainingStack = stack
             let op = remainingStack.removeLast()
             switch op {
             case .Operand(let value):
-                return ("\(currentString)\(value)", remainingStack)
+                return ("\(value)", remainingStack)
                 
             case .UnaryOperation(_, _):
-                let eval1 = describeStack("", stack: remainingStack)
-                return ("\(currentString)(\(op.description)(\(eval1.currentString)))", eval1.remainingStack)
+                let eval1 = describe(stack: remainingStack)
+                return ("(\(op.description)(\(eval1.currentString)))", eval1.remainingStack)
                 
-            case .BinaryOperation(_, _, let invertOrder):
-                let eval1 = describeStack("", stack: remainingStack)
-                let eval2 = describeStack("", stack: eval1.remainingStack)
-                if invertOrder {
-                    return ("\(currentString)(\(eval2.currentString)\(op.description)\(eval1.currentString))", eval2.remainingStack)
-                } else {
-                    return ("\(currentString)(\(eval1.currentString)\(op.description)\(eval2.currentString))", eval2.remainingStack)
-                }
+            case .BinaryOperation(_, _):
+                let eval1 = describe(stack: remainingStack)
+                let eval2 = describe(stack: eval1.remainingStack)
+                    return ("(\(eval2.currentString)\(op.description)\(eval1.currentString))", eval2.remainingStack)
             
             case .NamedValue(let symbol, _):
-                return ("\(currentString)\(symbol)", remainingStack)
+                return ("\(symbol)", remainingStack)
                 
             case .Variable(let symbol):
-                return ("\(currentString)\(symbol)", remainingStack)
+                return ("\(symbol)", remainingStack)
             }
         }
-        return (currentString, stack)
+        return ("?", stack)
     }
 }
