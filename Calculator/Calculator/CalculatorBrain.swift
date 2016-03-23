@@ -138,8 +138,8 @@ class CalculatorBrain {
                 let eval1 = describe(stack: remainingStack)
                 let eval2 = describe(stack: eval1.remainingStack)
                 
-                let currentString1 = (Double(eval1.currentString) != nil ? eval1.currentString : "(\(eval1.currentString))")
-                let currentString2 = (Double(eval2.currentString) != nil ? eval2.currentString : "(\(eval2.currentString))")
+                let currentString1 = (Double(eval1.currentString) != nil || variableValues[eval1.currentString] != nil || knownOps[eval1.currentString] != nil ? eval1.currentString : "(\(eval1.currentString))")
+                let currentString2 = (Double(eval2.currentString) != nil || variableValues[eval2.currentString] != nil || knownOps[eval2.currentString] != nil ? eval2.currentString : "(\(eval2.currentString))")
                 
                 return ("\(currentString2)\(op.description)\(currentString1)", eval2.remainingStack)
             

@@ -35,7 +35,7 @@ class ViewController: UIViewController {
                 display.text = "\(value)"
                 currentlyTypingNumber = false
             } else {
-                display.text = "ERROR"
+                display.text = ""
             }
         }
     }
