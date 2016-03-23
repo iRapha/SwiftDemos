@@ -62,7 +62,7 @@ class ViewController: UIViewController {
         }
         set {
             if newValue == nil {
-                display.text = "0"
+                display.text = "ERROR"
             } else {
                 display.text = "\(newValue!)"
                 currentlyTypingNumber = false
@@ -73,11 +73,7 @@ class ViewController: UIViewController {
     @IBAction func enter() {
         currentlyTypingNumber = false
         if let value = displayValue {
-            if let result = brain.push(operand: value) {
-                displayValue = result
-            } else {
-                displayValue = -0.0
-            }
+            displayValue = brain.push(operand: value)
         } else {
             displayValue = 0
         }
@@ -86,11 +82,7 @@ class ViewController: UIViewController {
     
     @IBAction func operate(sender: UIButton) {
         if currentlyTypingNumber { enter() }
-        if let result = brain.perform(operation: sender.currentTitle!) {
-            displayValue = result
-        } else {
-            displayValue = -0.0
-        }
+        displayValue = brain.perform(operation: sender.currentTitle!)
         history.text = brain.getStackString()
     }
 }
