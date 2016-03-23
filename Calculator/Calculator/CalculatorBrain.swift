@@ -110,7 +110,12 @@ class CalculatorBrain {
     
     var description: String {
         get {
-            let desc = describe(stack: stack).currentString
+            var (desc, remainingStack) = describe(stack: stack)
+            while !remainingStack.isEmpty {
+                let (newDesc, newRemainingStack) = describe(stack: remainingStack)
+                remainingStack = newRemainingStack
+                desc = "\(newDesc), \(desc)"
+            }
             if desc == "?" { return "" }
             return "\(desc)="
         }
