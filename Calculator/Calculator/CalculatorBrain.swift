@@ -106,6 +106,7 @@ class CalculatorBrain {
     
     func clear() {
         stack = [Op]()
+        variableValues = [String:Double]()
     }
     
     var description: String {

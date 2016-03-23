@@ -76,5 +76,20 @@ class ViewController: UIViewController {
         displayValue = brain.perform(operation: sender.currentTitle!)
         history.text = brain.description
     }
+    
+    @IBAction func getM() {
+        if currentlyTypingNumber { enter() }
+        displayValue = brain.push(variable: "M")
+        history.text = brain.description
+    }
+    
+    @IBAction func setM() {
+        currentlyTypingNumber = false
+        if let value = displayValue {
+            brain.variableValues["M"] = value
+        }
+        displayValue = brain.eval()
+        history.text = brain.description
+    }
 }
 

@@ -41,6 +41,9 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="l3X-J3-M44">
                                 <rect key="frame" x="248.5" y="111" width="103" height="90"/>
                                 <state key="normal" title="M"/>
+                                <connections>
+                                    <action selector="getM" destination="BYZ-38-t0r" eventType="touchUpInside" id="Z24-bk-SB2"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2kd-MX-xrX">
                                 <rect key="frame" x="469" y="209" width="103" height="89.5"/>
@@ -189,6 +192,9 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SNJ-p0-zvp">
                                 <rect key="frame" x="359.5" y="111" width="102" height="90"/>
                                 <state key="normal" title="→M"/>
+                                <connections>
+                                    <action selector="setM" destination="BYZ-38-t0r" eventType="touchUpInside" id="4QF-c3-E6R"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
