@@ -18,10 +18,10 @@ class CalculatorBrain {
         func learnOp(op: Op) {
             knownOps[op.description] = op
         }
-        learnOp(Op.BinaryOperation("✕", *))
-        learnOp(Op.BinaryOperation("+", +))
-        learnOp(Op.BinaryOperation("÷", { $1 / $0 }))
-        learnOp(Op.BinaryOperation("−", { $1 - $0 }))
+        learnOp(Op.BinaryOperation("✕", *, false))
+        learnOp(Op.BinaryOperation("+", +, false))
+        learnOp(Op.BinaryOperation("÷", { $1 / $0 }, true))
+        learnOp(Op.BinaryOperation("−", { $1 - $0 }, true))
         learnOp(Op.UnaryOperation("√", sqrt))
         learnOp(Op.UnaryOperation("sin", sin))
         learnOp(Op.UnaryOperation("cos", cos))
@@ -30,20 +30,10 @@ class CalculatorBrain {
     
     private enum Op: CustomStringConvertible {
         case UnaryOperation(String, Double -> Double)
-        case BinaryOperation(String, (Double, Double) -> Double)
+        case BinaryOperation(String, (Double, Double) -> Double, Bool)
         case NamedValue(String, Double)
         case Operand(Double)
         case Variable(String)
-        
-        var invertOrder: Bool {
-            get {
-                switch self.description {
-                case "÷": return true
-                case "−": return true
-                default: return false
-                }
-            }
-        }
         
         var description: String {
             get {
@@ -52,7 +42,7 @@ class CalculatorBrain {
                     return "\(operand)"
                 case .UnaryOperation(let symbol, _):
                     return symbol
-                case .BinaryOperation(let symbol, _):
+                case .BinaryOperation(let symbol, _, _):
                     return symbol
                 case .NamedValue(let symbol, _):
                     return symbol
@@ -80,7 +70,7 @@ class CalculatorBrain {
                 if let operand = eval1.result {
                     return (operation(operand), eval1.remainingStack)
                 }
-            case .BinaryOperation(_, let operation):
+            case .BinaryOperation(_, let operation, _):
                 let eval1 = eval(remainingStack)
                 if let operand1 = eval1.result {
                     let eval2 = eval(eval1.remainingStack)
@@ -118,11 +108,13 @@ class CalculatorBrain {
         stack = [Op]()
     }
     
-    func getStackString() -> String {
-        return buildStackString("", stack: stack).currentString
+    var description: String {
+        get {
+            return describeStack("", stack: stack).currentString
+        }
     }
     
-    private func buildStackString(currentString: String, stack: [Op]) -> (currentString: String, remainingStack: [Op]) {
+    private func describeStack(currentString: String, stack: [Op]) -> (currentString: String, remainingStack: [Op]) {
         if !stack.isEmpty {
             var remainingStack = stack
             let op = remainingStack.removeLast()
@@ -131,13 +123,13 @@ class CalculatorBrain {
                 return ("\(currentString)\(value)", remainingStack)
                 
             case .UnaryOperation(_, _):
-                let eval1 = buildStackString("", stack: remainingStack)
+                let eval1 = describeStack("", stack: remainingStack)
                 return ("\(currentString)(\(op.description)(\(eval1.currentString)))", eval1.remainingStack)
                 
-            case .BinaryOperation(_, _):
-                let eval1 = buildStackString("", stack: remainingStack)
-                let eval2 = buildStackString("", stack: eval1.remainingStack)
-                if op.invertOrder {
+            case .BinaryOperation(_, _, let invertOrder):
+                let eval1 = describeStack("", stack: remainingStack)
+                let eval2 = describeStack("", stack: eval1.remainingStack)
+                if invertOrder {
                     return ("\(currentString)(\(eval2.currentString)\(op.description)\(eval1.currentString))", eval2.remainingStack)
                 } else {
                     return ("\(currentString)(\(eval1.currentString)\(op.description)\(eval2.currentString))", eval2.remainingStack)

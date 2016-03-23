@@ -58,7 +58,7 @@ class ViewController: UIViewController {
     @IBAction func clear() {
         brain.clear()
         display.text = "0"
-        history.text = brain.getStackString()
+        history.text = brain.description
     }
     
     @IBAction func enter() {
@@ -68,13 +68,13 @@ class ViewController: UIViewController {
         } else {
             displayValue = 0
         }
-        history.text = brain.getStackString()
+        history.text = brain.description
     }
     
     @IBAction func operate(sender: UIButton) {
         if currentlyTypingNumber { enter() }
         displayValue = brain.perform(operation: sender.currentTitle!)
-        history.text = brain.getStackString()
+        history.text = brain.description
     }
 }
 
