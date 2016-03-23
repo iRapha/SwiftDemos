@@ -13,6 +13,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var display: UILabel!
     @IBOutlet weak var history: UILabel!
     
+    let brain = CalculatorBrain()
+    
     var currentlyTypingNumber = false
     var numberHasPoint: Bool {
         get {
@@ -44,64 +46,52 @@ class ViewController: UIViewController {
         enter()
     }
     
-    func appendToHistory(item: String) {
-        if let hist = history.text {
-            history.text = hist + item + " "
-        } else {
-            history.text = item + " "
-        }
-    }
-    
     @IBAction func clear() {
-        stack = Array<Double>()
+        brain.clear()
         display.text = "0"
-        history.text = ""
+        history.text = brain.getStackString()
     }
     
-    var stack = Array<Double>()
-    var displayValue : Double {
+    var displayValue : Double? {
         get {
-            return Double(display.text!)!
+            if let value = Double(display.text!) {
+                return value
+            } else {
+                return nil
+            }
         }
         set {
-            display.text = "\(newValue)"
-            currentlyTypingNumber = false
+            if newValue == nil {
+                display.text = "0"
+            } else {
+                display.text = "\(newValue!)"
+                currentlyTypingNumber = false
+            }
         }
     }
     
     @IBAction func enter() {
         currentlyTypingNumber = false
-        stack.append(displayValue)
-        appendToHistory(display.text!)
+        if let value = displayValue {
+            if let result = brain.push(operand: value) {
+                displayValue = result
+            } else {
+                displayValue = -0.0
+            }
+        } else {
+            displayValue = 0
+        }
+        history.text = brain.getStackString()
     }
     
     @IBAction func operate(sender: UIButton) {
         if currentlyTypingNumber { enter() }
-        appendToHistory(sender.currentTitle!)
-        switch sender.currentTitle! {
-        case "✕": perform(operation: { $0 * $1 })
-        case "÷": perform(operation: { $1 / $0 })
-        case "+": perform(operation: { $0 + $1 })
-        case "−": perform(operation: { $1 - $0 })
-        case "√": perform(operation: { sqrt($0) })
-        case "sin": perform(operation: { sin($0) })
-        case "cos": perform(operation: { cos($0) })
-        default: break
+        if let result = brain.perform(operation: sender.currentTitle!) {
+            displayValue = result
+        } else {
+            displayValue = -0.0
         }
-    }
-
-    private func perform(operation op : (Double, Double) -> Double) {
-        if stack.count >= 2 {
-            displayValue = op(stack.removeLast(), stack.removeLast())
-            enter()
-        }
-    }
-    
-    private func perform(operation op : Double -> Double) {
-        if stack.count >= 1 {
-            displayValue = op(stack.removeLast())
-            enter()
-        }
+        history.text = brain.getStackString()
     }
 }
 
