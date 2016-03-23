@@ -37,14 +37,14 @@ class ViewController: UIViewController {
         }
     }
     
-    @IBAction func appendSpecial(sender: UIButton) {
-        if currentlyTypingNumber { enter() }
-        switch sender.currentTitle! {
-            case "π": displayValue = M_PI
-            default: break
-        }
-        enter()
-    }
+//    @IBAction func appendSpecial(sender: UIButton) {
+//        if currentlyTypingNumber { enter() }
+//        switch sender.currentTitle! {
+//            case "π": displayValue = M_PI
+//            default: break
+//        }
+//        enter()
+//    }
     
     @IBAction func clear() {
         brain.clear()

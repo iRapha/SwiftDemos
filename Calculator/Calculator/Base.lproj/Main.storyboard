@@ -63,7 +63,7 @@
                                 <rect key="frame" x="469.5" y="109" width="102.5" height="115"/>
                                 <state key="normal" title="π"/>
                                 <connections>
-                                    <action selector="appendSpecial:" destination="BYZ-38-t0r" eventType="touchUpInside" id="76Y-ne-tsw"/>
+                                    <action selector="operate:" destination="BYZ-38-t0r" eventType="touchUpInside" id="AYm-Is-FQW"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g8N-CL-2JU">

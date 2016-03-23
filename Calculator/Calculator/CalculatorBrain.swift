@@ -12,6 +12,7 @@ class CalculatorBrain {
     
     private var stack = [Op]()
     private var knownOps = [String:Op]()
+    var variableValues = [String:Double]()
     
     init() {
         func learnOp(op: Op) {
@@ -24,12 +25,15 @@ class CalculatorBrain {
         learnOp(Op.UnaryOperation("√", sqrt))
         learnOp(Op.UnaryOperation("sin", sin))
         learnOp(Op.UnaryOperation("cos", cos))
+        learnOp(Op.NamedValue("π", M_PI))
     }
     
     private enum Op: CustomStringConvertible {
         case UnaryOperation(String, Double -> Double)
         case BinaryOperation(String, (Double, Double) -> Double)
+        case NamedValue(String, Double)
         case Operand(Double)
+        case Variable(String)
         
         var invertOrder: Bool {
             get {
@@ -49,6 +53,10 @@ class CalculatorBrain {
                 case .UnaryOperation(let symbol, _):
                     return symbol
                 case .BinaryOperation(let symbol, _):
+                    return symbol
+                case .NamedValue(let symbol, _):
+                    return symbol
+                case .Variable(let symbol):
                     return symbol
                 }
             }
@@ -80,6 +88,10 @@ class CalculatorBrain {
                         return (operation(operand1, operand2), eval2.remainingStack)
                     }
                 }
+            case .NamedValue(_, let value):
+                return (value, remainingStack)
+            case .Variable(let symbol):
+                return (variableValues[symbol], remainingStack)
             }
         }
         return (nil, stack)
@@ -87,7 +99,11 @@ class CalculatorBrain {
     
     func push(operand operand: Double) -> Double? {
         stack.append(Op.Operand(operand))
-        print(stack)
+        return eval()
+    }
+    
+    func push(variable symbol: String) -> Double? {
+        stack.append(Op.Variable(symbol))
         return eval()
     }
     
@@ -116,7 +132,7 @@ class CalculatorBrain {
                 
             case .UnaryOperation(_, _):
                 let eval1 = buildStackString("", stack: remainingStack)
-                return ("\(currentString)(\(op.description)\(eval1.currentString))", eval1.remainingStack)
+                return ("\(currentString)(\(op.description)(\(eval1.currentString)))", eval1.remainingStack)
                 
             case .BinaryOperation(_, _):
                 let eval1 = buildStackString("", stack: remainingStack)
@@ -126,6 +142,12 @@ class CalculatorBrain {
                 } else {
                     return ("\(currentString)(\(eval1.currentString)\(op.description)\(eval2.currentString))", eval2.remainingStack)
                 }
+            
+            case .NamedValue(let symbol, _):
+                return ("\(currentString)\(symbol)", remainingStack)
+                
+            case .Variable(let symbol):
+                return ("\(currentString)\(symbol)", remainingStack)
             }
         }
         return (currentString, stack)
